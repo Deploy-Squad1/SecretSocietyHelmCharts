@@ -23,13 +23,13 @@ pipeline {
                 script {
                     if (params.ENVIRONMENT == 'dev'){
                         env.TARGET_ROLE = ""
-                        env.CLUSTER_NAME = "dev-cluster"
+                        env.CLUSTER_NAME = "secret-society-dev"
                     } else if (params.ENVIRONMENT == 'stage') {
                         env.TARGET_ROLE = "arn:aws:iam::${STAGE_ACCOUNT_ID}:role/TerraformDeployRole"
-                        env.CLUSTER_NAME = "stage-cluster"
+                        env.CLUSTER_NAME = "secret-society-stage"
                     } else if (params.ENVIRONMENT == 'prod') {
                         env.TARGET_ROLE = "arn:aws:iam::${PROD_ACCOUNT_ID}:role/TerraformDeployRole"
-                        env.CLUSTER_NAME = "prod-cluster"
+                        env.CLUSTER_NAME = "secret-society-prod"
                     }
                     env.NAMESPACE = "secret-society-${params.ENVIRONMENT}"
                 }
