@@ -18,10 +18,15 @@ service:
 # -- Expose the service via gateway-api HTTPRoute
 # Requires Gateway API resources and suitable controller installed within the cluster
 # (see: https://gateway-api.sigs.k8s.io/guides/)
+gateway:
+  name: main-gateway
+  class: nginx
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+
 httpRoute:
-  # Which Gateways this Route is attached to.
-  parentRefs:
-  - name: main-gateway
   # List of rules and filters applied.
   rules:
   - matches:

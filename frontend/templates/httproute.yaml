@@ -4,9 +4,7 @@ metadata:
   name: {{ include "frontend.fullname" . }}
 spec:
   parentRefs:
-    {{- with .Values.httpRoute.parentRefs }}
-      {{- toYaml . | nindent 4 }}
-    {{- end }}
+  - name: {{ .Values.gateway.name }}
   rules:
     {{- range .Values.httpRoute.rules }}
     {{- with .matches }}
