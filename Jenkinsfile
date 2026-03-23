@@ -4,7 +4,7 @@ pipeline {
     parameters{
         choice(name: 'SERVICE_NAME', choices: ['map-service', 'voting-service', 'core-service', 'email-service', 'frontend-service'], description: 'Select the service to deploy')
         choice(name: 'ENVIRONMENT', choices: ['dev', 'stage', 'prod'], description: 'Select the environment to deploy to')
-        string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Enter the image tag to deploy')
+        string(name: 'IMAGE_TAG', description: 'Enter sha tag for the image to deploy')
     }
 
     environment{
