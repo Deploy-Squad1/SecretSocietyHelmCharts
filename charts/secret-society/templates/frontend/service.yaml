@@ -8,6 +8,7 @@ metadata:
 spec:
   type: {{ .Values.frontend.service.type }}
   selector:
+    app.kubernetes.io/name: {{ .Values.frontend.name }}
     {{- include "secret-society.selectorLabels" . | nindent 4 }}
   ports:
   - port: {{ .Values.frontend.service.port }}

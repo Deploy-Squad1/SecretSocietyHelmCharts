@@ -9,10 +9,12 @@ spec:
   replicas: {{ .Values.frontend.deployment.replicaCount }}
   selector:
     matchLabels:
+      app.kubernetes.io/name: {{ .Values.frontend.name }}
       {{- include "secret-society.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
+        app.kubernetes.io/name: {{ .Values.frontend.name }}
         {{- include "secret-society.labels" . | nindent 8 }}
     spec:
       containers:
