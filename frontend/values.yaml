@@ -10,6 +10,15 @@ image:
   repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/frontend-service
   tag: latest
 
+# This sets the container resources
+resources:
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+  requests:
+    memory: "128Mi"
+    cpu: "250m"
+
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
   type: ClusterIP
