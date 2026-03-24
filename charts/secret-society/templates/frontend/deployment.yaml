@@ -26,3 +26,5 @@ spec:
           {{- end }}
           ports:
           - containerPort: {{ .Values.frontend.service.port }}
+      imagePullSecrets:
+      - name: {{ .Values.ecrCredsSecret}}

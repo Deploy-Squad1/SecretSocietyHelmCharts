@@ -1,3 +1,5 @@
+ecrCredsSecret: awsecr-cred
+
 frontend:
   name: frontend
   
@@ -32,3 +34,72 @@ frontend:
       - path:
           type: PathPrefix
           value: /
+
+core:
+  name: core
+
+  deployment:
+    replicaCount: 1
+    image:
+      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/core-service
+      tag: working
+    lifecycle:
+      postStart:
+        command:
+          - python
+          - manage.py
+          - migrate
+    resources:
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  configMap:
+    name: core-env
+    data:
+      DEBUG: "True"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      ALLOWED_HOSTS: "*"
+      FRONTEND_SERVICE_URL: ""
+      EMAIL_SERVICE_URL: ""
+      MAP_SERVICE_BASE_URL: ""
+      VOTING_SERVICE_URL: ""
+
+  secret:
+    name: core-secret
+
+  gateway:
+    name: main-gateway
+
+  httpRoute:
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /core/api/v1
+
+db:
+  image: postgis/postgis:18-3.6-alpine
+
+  env:
+    POSTGRES_DB: "secret-society-db"
+    POSTGRES_USER: "secret-user"
+    POSTGRES_PASSWORD: "12345"
+
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+
+  storage: "1Gi"

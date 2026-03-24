@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.core.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.core.name }}
+    {{- include "secret-society.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.core.service.type }}
+  selector:
+    app.kubernetes.io/name: {{ .Values.core.name }}
+    {{- include "secret-society.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: {{ .Values.core.service.port }}
+      targetPort: {{ .Values.core.service.port }}
