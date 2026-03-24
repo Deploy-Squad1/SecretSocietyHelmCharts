@@ -32,13 +32,14 @@ pipeline {
                         env.CLUSTER_NAME = "secret-society-prod"
                     }
                     env.NAMESPACE = "secret-society-${params.ENVIRONMENT}"
+                    env.RELEASE_NAME = "secret-society"
                     env.CHART_PATH = "./charts/secret-society"
                 }
                 withAWS(role: "${env.TARGET_ROLE}", region: "${AWS_REGION}") {
                     sh """
                         aws eks update-kubeconfig --name ${env.CLUSTER_NAME} --region ${AWS_REGION}
 
-                        helm upgrade --install ${params.SERVICE_NAME} ${env.CHART_PATH} \
+                        helm upgrade --install ${env.RELEASE_NAME} ${env.CHART_PATH} \
                             --namespace ${env.NAMESPACE} \
                             --create-namespace \
                             --set ${params.SERVICE_NAME}.deployment.image.repository=${ECR_REPO} \
