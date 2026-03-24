@@ -34,6 +34,7 @@ pipeline {
                     env.NAMESPACE = "secret-society-${params.ENVIRONMENT}"
                     env.RELEASE_NAME = "secret-society"
                     env.CHART_PATH = "./charts/secret-society"
+                    env.HELM_NAME = params.SERVICE_NAME.replace('-service', '')
                 }
                 withAWS(role: "${env.TARGET_ROLE}", region: "${AWS_REGION}") {
                     sh """
@@ -42,8 +43,8 @@ pipeline {
                         helm upgrade --install ${env.RELEASE_NAME} ${env.CHART_PATH} \
                             --namespace ${env.NAMESPACE} \
                             --create-namespace \
-                            --set ${params.SERVICE_NAME}.deployment.image.repository=${ECR_REPO} \
-                            --set ${params.SERVICE_NAME}.deployment.image.tag=${params.IMAGE_TAG} \
+                            --set ${HELM_NAME}.deployment.image.repository=${ECR_REPO} \
+                            --set ${HELM_NAME}.deployment.image.tag=${params.IMAGE_TAG} \
                             --reuse-values \
                             --wait --timeout 5m
                     """
