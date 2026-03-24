@@ -1,0 +1,15 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ .Values.frontend.gateway.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.frontend.name }}
+    {{- include "secret-society.labels" . | nindent 4 }}
+spec:
+  gatewayClassName: {{ .Values.frontend.gateway.class }}
+  listeners:
+    {{- range .Values.frontend.gateway.listeners }}
+    - name: {{ .name }}
+      protocol: {{ .protocol }}
+      port: {{ .port }}
+    {{- end }}
