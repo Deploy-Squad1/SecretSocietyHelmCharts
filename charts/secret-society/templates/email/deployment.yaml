@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.email.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.email.name }}
+    {{- include "secret-society.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.email.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.email.name }}
+      {{- include "secret-society.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.email.name }}
+        {{- include "secret-society.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.email.name }}
+          image: "{{ .Values.email.deployment.image.repository }}:{{ .Values.email.deployment.image.tag }}"
+          envFrom:
+          - configMapRef:
+              name: {{ .Values.email.configMap.name }}
+          - secretRef:
+              name: {{ .Values.email.deployment.secretRef }}
+          {{- with .Values.email.deployment.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+          - containerPort: {{ .Values.email.service.port }}

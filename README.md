@@ -8,6 +8,23 @@
 
 ## How to apply charts
 
+### Notes
+
+The `email` Deployment expects a Kubernetes secret named `email-secret` (value that can be changed in values.yaml).
+This secret is not created by Helm and must exist before installing the chart.
+
+Create it by running:
+
+```bash
+kubectl create secret generic email-secret \
+  --from-literal=DJANGO_SECRET_KEY='' \
+  --from-literal=SMTP_USER='' \
+  --from-literal=SMTP_PASS='' \
+  -n <namespace>
+```
+
+### Applying charts
+
 Run `helm install secret-society charts/secret-society --namespace {namespace}`
 
 To upgrade existing chart run `helm upgrade secret-society charts/secret-society --namespace {namespace}`
