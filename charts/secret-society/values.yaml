@@ -42,7 +42,7 @@ core:
     replicaCount: 1
     image:
       repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/core-service
-      tag: working
+      tag: latest
     lifecycle:
       postStart:
         command:
@@ -67,11 +67,11 @@ core:
       DEBUG: "True"
       DB_HOST: "db"
       DB_PORT: "5432"
-      ALLOWED_HOSTS: "*"
-      FRONTEND_SERVICE_URL: ""
-      EMAIL_SERVICE_URL: ""
-      MAP_SERVICE_BASE_URL: ""
-      VOTING_SERVICE_URL: ""
+      ALLOWED_HOSTS: "http://example.com"
+      FRONTEND_SERVICE_URL: "http://example.com"
+      EMAIL_SERVICE_URL: "http://example.com"
+      MAP_SERVICE_BASE_URL: "http://example.com"
+      VOTING_SERVICE_URL: "http://example.com"
 
   secret:
     name: core-secret
@@ -85,21 +85,3 @@ core:
           - path:
               type: PathPrefix
               value: /core/api/v1
-
-db:
-  image: postgis/postgis:18-3.6-alpine
-
-  env:
-    POSTGRES_DB: "secret-society-db"
-    POSTGRES_USER: "secret-user"
-    POSTGRES_PASSWORD: "12345"
-
-  resources:
-    limits:
-      memory: "512Mi"
-      cpu: "500m"
-    requests:
-      memory: "256Mi"
-      cpu: "250m"
-
-  storage: "1Gi"
