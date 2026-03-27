@@ -46,10 +46,9 @@ core:
     lifecycle:
       postStart:
         command:
-          - python
-          - manage.py
-          - migrate
-    secretRef: core-secret
+        - python
+        - manage.py
+        - migrate
     resources:
       limits:
         memory: "512Mi"
@@ -57,6 +56,7 @@ core:
       requests:
         memory: "256Mi"
         cpu: "250m"
+    secretRef: core-secret
 
   configMap:
     name: core-env
@@ -64,7 +64,7 @@ core:
       DEBUG: "True"
       DB_HOST: "db"
       DB_PORT: "5432"
-      ALLOWED_HOSTS: "http://example.com"
+      ALLOWED_HOSTS: "localhost"
       FRONTEND_SERVICE_URL: "http://example.com"
       EMAIL_SERVICE_URL: "http://example.com"
       MAP_SERVICE_BASE_URL: "http://example.com"
@@ -76,10 +76,10 @@ core:
 
   httpRoute:
     rules:
-      - matches:
-          - path:
-              type: PathPrefix
-              value: /core/api/v1
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /core/api/v1
 
 email:
   name: email
@@ -116,3 +116,38 @@ email:
       - path:
           type: PathPrefix
           value: /email
+
+map:
+  name: map
+
+  deployment:
+    replicaCount: 1
+    image:
+      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/map-service
+      tag: latest
+    resources:
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+    secretRef: map-secret
+
+  configMap:
+    name: map-env
+    data:
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      AWS_REGION: "eu-north-1"
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  httpRoute:
+    rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /map/api/artifacts
