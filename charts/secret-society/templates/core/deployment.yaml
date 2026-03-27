@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.core.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.core.name }}
+    {{- include "secret-society.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.core.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.core.name }}
+      {{- include "secret-society.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.core.name }}
+        {{- include "secret-society.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.core.name }}
+          image: "{{ .Values.core.deployment.image.repository }}:{{ .Values.core.deployment.image.tag }}"
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.core.configMap.name }}
+            - secretRef:
+                name: {{ .Values.core.deployment.secretRef }}
+          {{- with .Values.core.deployment.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.core.service.port }}
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  {{- toYaml .Values.core.deployment.lifecycle.postStart.command | nindent 18 }}
+      imagePullSecrets:
+        - name: {{ .Values.ecrCredsSecret }}

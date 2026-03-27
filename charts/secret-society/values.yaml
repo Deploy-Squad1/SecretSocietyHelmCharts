@@ -1,3 +1,5 @@
+ecrCredsSecret: awsecr-cred
+
 frontend:
   name: frontend
 
@@ -32,6 +34,52 @@ frontend:
       - path:
           type: PathPrefix
           value: /
+
+core:
+  name: core
+
+  deployment:
+    replicaCount: 1
+    image:
+      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/core-service
+      tag: latest
+    lifecycle:
+      postStart:
+        command:
+          - python
+          - manage.py
+          - migrate
+    secretRef: core-secret
+    resources:
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+
+  configMap:
+    name: core-env
+    data:
+      DEBUG: "True"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      ALLOWED_HOSTS: "http://example.com"
+      FRONTEND_SERVICE_URL: "http://example.com"
+      EMAIL_SERVICE_URL: "http://example.com"
+      MAP_SERVICE_BASE_URL: "http://example.com"
+      VOTING_SERVICE_URL: "http://example.com"
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  httpRoute:
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /core/api/v1
 
 email:
   name: email
