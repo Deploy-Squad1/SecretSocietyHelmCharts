@@ -20,21 +20,21 @@ spec:
       containers:
         - name: {{ .Values.core.name }}
           image: "{{ .Values.core.deployment.image.repository }}:{{ .Values.core.deployment.image.tag }}"
-          {{- with .Values.core.deployment.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ .Values.core.configMap.name }}
             - secretRef:
-                name: {{ .Values.core.secret.name }}
+                name: {{ .Values.core.deployment.secretRef }}
+          {{- with .Values.core.deployment.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.core.service.port }}
           lifecycle:
             postStart:
               exec:
                 command:
                   {{- toYaml .Values.core.deployment.lifecycle.postStart.command | nindent 18 }}
-          ports:
-            - containerPort: {{ .Values.core.service.port }}
       imagePullSecrets:
         - name: {{ .Values.ecrCredsSecret }}

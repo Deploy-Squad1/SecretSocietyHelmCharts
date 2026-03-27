@@ -2,7 +2,7 @@ ecrCredsSecret: awsecr-cred
 
 frontend:
   name: frontend
-  
+
   deployment:
     replicaCount: 1
     image:
@@ -49,6 +49,7 @@ core:
           - python
           - manage.py
           - migrate
+    secretRef: core-secret
     resources:
       limits:
         memory: "512Mi"
@@ -56,10 +57,6 @@ core:
       requests:
         memory: "256Mi"
         cpu: "250m"
-
-  service:
-    type: ClusterIP
-    port: 8000
 
   configMap:
     name: core-env
@@ -73,11 +70,9 @@ core:
       MAP_SERVICE_BASE_URL: "http://example.com"
       VOTING_SERVICE_URL: "http://example.com"
 
-  secret:
-    name: core-secret
-
-  gateway:
-    name: main-gateway
+  service:
+    type: ClusterIP
+    port: 8000
 
   httpRoute:
     rules:
@@ -85,3 +80,39 @@ core:
           - path:
               type: PathPrefix
               value: /core/api/v1
+
+email:
+  name: email
+
+  deployment:
+    replicaCount: 1
+    image:
+      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/email-service
+      tag: latest
+    resources:
+      limits:
+        memory: "256Mi"
+        cpu: "500m"
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+    secretRef: email-secret
+
+  configMap:
+    name: email-env
+    data:
+      ALLOWED_ROLES: "Gold"
+      SMTP_HOST: "mailhog"
+      SMTP_PORT: ""
+      FROM_EMAIL: ""
+
+  service:
+    type: ClusterIP
+    port: 8081
+
+  httpRoute:
+    rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /email

@@ -8,13 +8,10 @@
 
 ## How to apply charts
 
-Run `helm install secret-society charts/secret-society --namespace {namespace}`
+### Notes
 
-To upgrade existing chart run `helm upgrade secret-society charts/secret-society --namespace {namespace}`
-
-The `core` Deployment expects a Kubernetes secret named `core-secret` (default value).
+- The `core` Deployment expects a Kubernetes secret named `core-secret` (default value).
 This secret is not created by Helm and must exist before installing the chart.
-
 Create it by running:
 
 ```bash
@@ -26,15 +23,19 @@ kubectl create secret generic core-secret \
   -n <namespace>
 ```
 
-## To create an initial daily passcode
+- The `email` Deployment expects a Kubernetes secret named `email-secret` (value that can be changed in values.yaml).
+This secret is not created by Helm and must exist before installing the chart. Create it by running:
 
 ```bash
-kubectl -n <namespace> exec -it deploy/core -- python manage.py shell
+kubectl create secret generic email-secret \
+  --from-literal=DJANGO_SECRET_KEY='' \
+  --from-literal=SMTP_USER='' \
+  --from-literal=SMTP_PASS='' \
+  -n <namespace>
 ```
 
-and then
+### Applying charts
 
-```python
-from app.services import PasscodeService
-PasscodeService.update("test")
-```
+Run `helm install secret-society charts/secret-society --namespace {namespace}`
+
+To upgrade existing chart run `helm upgrade secret-society charts/secret-society --namespace {namespace}`
