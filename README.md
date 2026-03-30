@@ -11,7 +11,6 @@
 ### Notes
 
 - The `core` Deployment expects a Kubernetes secret named `core-secret` (default value).
-This secret is not created by Helm and must exist before installing the chart.
 Create it by running:
 
 ```bash
@@ -24,13 +23,28 @@ kubectl create secret generic core-secret \
 ```
 
 - The `email` Deployment expects a Kubernetes secret named `email-secret` (value that can be changed in values.yaml).
-This secret is not created by Helm and must exist before installing the chart. Create it by running:
+Create it by running:
 
 ```bash
 kubectl create secret generic email-secret \
   --from-literal=DJANGO_SECRET_KEY='' \
   --from-literal=SMTP_USER='' \
   --from-literal=SMTP_PASS='' \
+  -n <namespace>
+```
+
+- The `map` Deployment expects a Kubernetes secret named `map-secret` (default value).
+Create it by running:
+
+```bash
+kubectl create secret generic map-secret \
+  --from-literal=JWT_SECRET='' \
+  --from-literal=DB_NAME='' \
+  --from-literal=DB_USER='' \
+  --from-literal=DB_PASSWORD='' \
+  --from-literal=AWS_ACCESS_KEY_ID='' \
+  --from-literal=AWS_SECRET_ACCESS_KEY='' \
+  --from-literal=AWS_BUCKET_NAME='' \
   -n <namespace>
 ```
 
