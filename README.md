@@ -48,6 +48,18 @@ kubectl create secret generic map-secret \
   -n <namespace>
 ```
 
+- The `voting` Deployment expects a Kubernetes secret named `voting-secret` (default value).
+Create it by running:
+
+```bash
+kubectl create secret generic voting-secret \
+  --from-literal=JWT_SECRET='' \
+  --from-literal=DB_NAME='' \
+  --from-literal=DB_USER='' \
+  --from-literal=DB_PASSWORD='' \
+  -n <namespace>
+```
+
 ### Applying charts
 
 Run `helm install secret-society charts/secret-society --namespace {namespace}`
