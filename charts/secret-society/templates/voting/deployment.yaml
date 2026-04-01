@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.voting.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.voting.name }}
+    {{- include "secret-society.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.voting.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.voting.name }}
+      {{- include "secret-society.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.voting.name }}
+        {{- include "secret-society.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.voting.name }}
+          image: "{{ .Values.voting.deployment.image.repository }}:{{ .Values.voting.deployment.image.tag }}"
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.voting.configMap.name }}
+            - secretRef:
+                name: {{ .Values.voting.deployment.secretRef }}
+          {{- with .Values.voting.deployment.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.voting.service.port }}
+      imagePullSecrets:
+        - name: {{ .Values.ecrCredsSecret }}

@@ -151,3 +151,37 @@ map:
       - path:
           type: PathPrefix
           value: /map/api/artifacts
+
+voting:
+  name: voting
+
+  deployment:
+    replicaCount: 1
+    image:
+      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/voting-service
+      tag: latest
+    resources:
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+    secretRef: voting-secret
+
+  configMap:
+    name: voting-env
+    data:
+      DB_HOST: "db"
+      DB_PORT: "5432"
+
+  service:
+    type: ClusterIP
+    port: 8085
+
+  httpRoute:
+    rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /voting/api/polls
