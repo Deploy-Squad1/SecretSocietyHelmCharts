@@ -16,7 +16,11 @@ spec:
       labels:
         app.kubernetes.io/name: {{ .Values.voting.name }}
         {{- include "secret-society.labels" . | nindent 8 }}
+      annotations:
+        consul.hashicorp.com/connect-service: {{ .Values.voting.name }}
+        {{- include "secret-society.consulAnnotations" . | nindent 8 }}
     spec:
+      serviceAccountName: {{ .Values.voting.name }}
       containers:
         - name: {{ .Values.voting.name }}
           image: "{{ .Values.voting.deployment.image.repository }}:{{ .Values.voting.deployment.image.tag }}"
