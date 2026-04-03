@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.core.name }}-{{ .Values.core.cronjobs.rotatePasscode.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.core.name }}-{{ .Values.core.cronjobs.rotatePasscode.name }}
+    {{- include "secret-society.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.core.cronjobs.rotatePasscode.schedule | quote }}
+  timeZone: {{ .Values.cronjobs.timeZone | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.cronjobs.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.cronjobs.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjobs.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.cronjobs.backoffLimit }}
+      template:
+        spec:
+          containers:
+          - name: curl-worker
+            image: {{ .Values.cronjobs.image.repository }}:{{ .Values.cronjobs.image.tag }}
+            imagePullPolicy: {{ .Values.cronjobs.image.pullPolicy }}
+            command:
+            - /bin/sh
+            - -c
+            - curl -iv -X POST http://{{ .Values.core.name }}:{{ .Values.core.service.port }}{{ .Values.core.cronjobs.rotatePasscode.path }}
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.core.name }}-{{ .Values.core.cronjobs.assignInquisitor.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.core.name }}-{{ .Values.core.cronjobs.assignInquisitor.name }}
+    {{- include "secret-society.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.core.cronjobs.assignInquisitor.schedule | quote }}
+  timeZone: {{ .Values.cronjobs.timeZone | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.cronjobs.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.cronjobs.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjobs.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.cronjobs.backoffLimit }}
+      template:
+        spec:
+          containers:
+          - name: curl-worker
+            image: {{ .Values.cronjobs.image.repository }}:{{ .Values.cronjobs.image.tag }}
+            imagePullPolicy: {{ .Values.cronjobs.image.pullPolicy }}
+            command:
+            - /bin/sh
+            - -c
+            - curl -iv -X POST http://{{ .Values.core.name }}:{{ .Values.core.service.port }}{{ .Values.core.cronjobs.assignInquisitor.path }}
+          restartPolicy: OnFailure

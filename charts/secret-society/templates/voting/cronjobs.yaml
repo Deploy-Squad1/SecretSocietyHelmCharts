@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.voting.name }}-{{ .Values.voting.cronjobs.checkPolls.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.voting.name }}-{{ .Values.voting.cronjobs.checkPolls.name }}
+    {{- include "secret-society.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.voting.cronjobs.checkPolls.schedule | quote }}
+  timeZone: {{ .Values.cronjobs.timeZone | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.cronjobs.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.cronjobs.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjobs.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.cronjobs.backoffLimit }}
+      template:
+        spec:
+          containers:
+          - name: curl-worker
+            image: {{ .Values.cronjobs.image.repository }}:{{ .Values.cronjobs.image.tag }}
+            imagePullPolicy: {{ .Values.cronjobs.image.pullPolicy }}
+            command:
+            - /bin/sh
+            - -c
+            - curl -iv -X POST http://{{ .Values.voting.name }}:{{ .Values.voting.service.port }}{{ .Values.voting.cronjobs.checkPolls.path }}
+          restartPolicy: OnFailure

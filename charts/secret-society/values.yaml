@@ -81,6 +81,16 @@ core:
           type: PathPrefix
           value: /core/api/v1
 
+  cronjobs:
+    rotatePasscode:
+      name: rotate-passcodes
+      schedule: "0 7 * * *"
+      path: /core/api/internal/v1/passcode/rotate
+    assignInquisitor:
+      name: assign-inquisitors
+      schedule: "5 7 * * *"
+      path: /core/api/internal/v1/inquisitor/assign-new
+
 email:
   name: email
 
@@ -185,3 +195,20 @@ voting:
       - path:
           type: PathPrefix
           value: /voting/api/polls
+
+  cronjobs:
+    checkPolls:
+      name: check-polls
+      schedule: "*/10 * * * *"
+      path: /voting/api/internal/polls/process
+
+cronjobs:
+  image:
+    repository: curlimages/curl
+    tag: latest
+    pullPolicy: IfNotPresent
+  timeZone: "Europe/Kyiv"
+  startingDeadlineSeconds: 200
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  backoffLimit: 2
