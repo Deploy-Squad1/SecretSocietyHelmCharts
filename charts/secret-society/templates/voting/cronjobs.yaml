@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "secret-society.fullname" . | trunc 38 }}-polls-process
+  labels:
+    {{- include "secret-society.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronjobs.pollsProcess.schedule | quote }}
+  timeZone: {{ .Values.cronjobs.timeZone | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.cronjobs.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.cronjobs.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjobs.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.cronjobs.backoffLimit }}
+      template:
+        spec:
+          containers:
+          - name: curl-worker
+            image: {{ .Values.cronjobs.image.repository }}:{{ .Values.cronjobs.image.tag }}
+            imagePullPolicy: {{ .Values.cronjobs.image.pullPolicy }}
+            command:
+            - /bin/sh
+            - -c
+            - curl -iv -X POST http://{{ .Values.voting.name }}:{{ .Values.voting.service.port }}{{ .Values.cronjobs.pollsProcess.path }}
+          restartPolicy: OnFailure

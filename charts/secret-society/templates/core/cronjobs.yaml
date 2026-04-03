@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "secret-society.fullname" . | trunc 45 }}-rotate
+  labels:
+    {{- include "secret-society.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronjobs.rotate.schedule | quote }}
+  timeZone: {{ .Values.cronjobs.timeZone | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.cronjobs.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.cronjobs.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjobs.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+    backoffLimit: {{ .Values.cronjobs.backoffLimit }}
+      template:
+        spec:
+          containers:
+          - name: curl-worker
+            image: {{ .Values.cronjobs.image.repository }}:{{ .Values.cronjobs.image.tag }}
+            imagePullPolicy: {{ .Values.cronjobs.image.pullPolicy }}
+            command:
+            - /bin/sh
+            - -c
+            - curl -iv -X POST http://{{ .Values.core.name }}:{{ .Values.core.service.port }}{{ .Values.cronjobs.rotate.path }}
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "secret-society.fullname" . | trunc 45 }}-assign
+  labels:
+    {{- include "secret-society.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronjobs.assign.schedule | quote }}
+  timeZone: {{ .Values.cronjobs.timeZone | quote }}
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.cronjobs.startingDeadlineSeconds }}
+  successfulJobsHistoryLimit: {{ .Values.cronjobs.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjobs.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.cronjobs.backoffLimit }}
+      template:
+        spec:
+          containers:
+          - name: curl-worker
+            image: {{ .Values.cronjobs.image.repository }}:{{ .Values.cronjobs.image.tag }}
+            imagePullPolicy: {{ .Values.cronjobs.image.pullPolicy }}
+            command:
+            - /bin/sh
+            - -c
+            - curl -iv -X POST http://{{ .Values.core.name }}:{{ .Values.core.service.port }}{{ .Values.cronjobs.assign.path }}
+          restartPolicy: OnFailure

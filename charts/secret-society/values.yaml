@@ -185,3 +185,23 @@ voting:
       - path:
           type: PathPrefix
           value: /voting/api/polls
+
+cronjobs:
+  image:
+    repository: curlimages/curl
+    tag: latest
+    pullPolicy: IfNotPresent
+  timeZone: "Europe/Kyiv"
+  startingDeadlineSeconds: 200
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  backoffLimit: 2
+  rotate:
+    schedule: "0 7 * * *"
+    path: /core/api/internal/v1/passcode/rotate
+  assign:
+    schedule: "5 7 * * *"
+    path: /core/api/internal/v1/inquisitor/assign-new
+  pollsProcess:
+    schedule: "*/10 * * * *"
+    path: /voting/api/internal/polls/process
