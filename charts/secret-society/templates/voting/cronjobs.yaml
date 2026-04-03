@@ -1,11 +1,12 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "secret-society.fullname" . | trunc 38 }}-polls-process
+  name: {{ .Values.voting.name }}-{{ .Values.voting.cronjobs.checkPolls.name }}
   labels:
+    app.kubernetes.io/name: {{ .Values.voting.name }}-{{ .Values.voting.cronjobs.checkPolls.name }}
     {{- include "secret-society.labels" . | nindent 4 }}
 spec:
-  schedule: {{ .Values.cronjobs.pollsProcess.schedule | quote }}
+  schedule: {{ .Values.voting.cronjobs.checkPolls.schedule | quote }}
   timeZone: {{ .Values.cronjobs.timeZone | quote }}
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: {{ .Values.cronjobs.startingDeadlineSeconds }}
@@ -23,5 +24,5 @@ spec:
             command:
             - /bin/sh
             - -c
-            - curl -iv -X POST http://{{ .Values.voting.name }}:{{ .Values.voting.service.port }}{{ .Values.cronjobs.pollsProcess.path }}
+            - curl -iv -X POST http://{{ .Values.voting.name }}:{{ .Values.voting.service.port }}{{ .Values.voting.cronjobs.checkPolls.path }}
           restartPolicy: OnFailure
