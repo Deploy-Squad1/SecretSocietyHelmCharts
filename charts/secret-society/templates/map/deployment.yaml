@@ -16,7 +16,11 @@ spec:
       labels:
         app.kubernetes.io/name: {{ .Values.map.name }}
         {{- include "secret-society.labels" . | nindent 8 }}
+      annotations:
+        consul.hashicorp.com/connect-service: {{ .Values.map.name }}
+        {{- include "secret-society.consulAnnotations" . | nindent 8 }}
     spec:
+      serviceAccountName: {{ .Values.map.name }}
       containers:
         - name: {{ .Values.map.name }}
           image: "{{ .Values.map.deployment.image.repository }}:{{ .Values.map.deployment.image.tag }}"
