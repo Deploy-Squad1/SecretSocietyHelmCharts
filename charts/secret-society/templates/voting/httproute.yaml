@@ -7,14 +7,14 @@ metadata:
     {{- include "secret-society.labels" . | nindent 4 }}
 spec:
   parentRefs:
-    - name: {{ .Values.frontend.gateway.name }}
+  - name: {{ .Values.frontend.gateway.name }}
   rules:
     {{- range .Values.voting.httpRoute.rules }}
     {{- with .matches }}
     - matches:
       {{- toYaml . | nindent 8 }}
     {{- end }}
-      backendRefs:
-        - name: {{ $.Values.voting.name }}
-          port: {{ $.Values.voting.service.port }}
     {{- end }}
+      backendRefs:
+      - name: {{ .Values.voting.name }}
+        port: {{ .Values.voting.service.port }}
