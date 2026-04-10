@@ -16,7 +16,11 @@ spec:
       labels:
         app.kubernetes.io/name: {{ .Values.email.name }}
         {{- include "secret-society.labels" . | nindent 8 }}
+      annotations:
+        consul.hashicorp.com/connect-service: {{ .Values.email.name }}
+        {{- include "secret-society.consulAnnotations" . | nindent 8 }}
     spec:
+      serviceAccountName: {{ .Values.email.name }}
       containers:
         - name: {{ .Values.email.name }}
           image: "{{ .Values.email.deployment.image.repository }}:{{ .Values.email.deployment.image.tag }}"
