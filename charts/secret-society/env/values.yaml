@@ -29,6 +29,11 @@ frontend:
       port: 80
       hostname: app.junglemassive.xyz
 
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: app.junglemassive.xyz
+
   httpRoute:
     rules:
     - matches:
@@ -63,10 +68,9 @@ core:
     name: core-env
     data:
       DEBUG: "True"
-      DB_HOST: "db"
-      DB_PORT: "5432"
-      ALLOWED_HOSTS: "localhost"
-      FRONTEND_SERVICE_URL: "http://example.com"
+      DB_SSLMODE: "require"
+      ALLOWED_HOSTS: "localhost,app.junglemassive.xyz"
+      FRONTEND_SERVICE_URL: "https://app.junglemassive.xyz"
       EMAIL_SERVICE_URL: "http://example.com"
       MAP_SERVICE_BASE_URL: "http://example.com"
       VOTING_SERVICE_URL: "http://example.com"
@@ -148,8 +152,7 @@ map:
   configMap:
     name: map-env
     data:
-      DB_HOST: "db"
-      DB_PORT: "5432"
+      DB_SSLMODE: "require"
       AWS_REGION: "eu-north-1"
 
   service:
@@ -183,8 +186,7 @@ voting:
   configMap:
     name: voting-env
     data:
-      DB_HOST: "db"
-      DB_PORT: "5432"
+      DB_SSLMODE: "require"
 
   service:
     type: ClusterIP
