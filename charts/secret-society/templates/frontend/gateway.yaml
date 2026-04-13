@@ -2,6 +2,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: {{ .Values.frontend.gateway.name }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/name: {{ .Values.frontend.name }}
     {{- include "secret-society.labels" . | nindent 4 }}
@@ -12,4 +13,12 @@ spec:
     - name: {{ .name }}
       protocol: {{ .protocol }}
       port: {{ .port }}
+      hostname: {{ .hostname | quote }}
+    {{- if eq .protocol "HTTPS" }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: app-tls
+      {{- end }}
     {{- end }}
