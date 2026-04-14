@@ -1,5 +1,3 @@
-ecrCredsSecret: awsecr-cred
-
 frontend:
   name: frontend
 
@@ -10,11 +8,11 @@ frontend:
       tag: latest
     resources:
       limits:
-        memory: "256Mi"
-        cpu: "500m"
+        memory: "64Mi"
+        cpu: "50m"
       requests:
-        memory: "128Mi"
-        cpu: "250m"
+        memory: "32Mi"
+        cpu: "20m"
 
   service:
     type: ClusterIP
@@ -57,11 +55,11 @@ core:
         - migrate
     resources:
       limits:
-        memory: "512Mi"
-        cpu: "500m"
+        memory: "256Mi"
+        cpu: "300m"
       requests:
         memory: "256Mi"
-        cpu: "250m"
+        cpu: "150m"
     secretRef: core-secret
 
   configMap:
@@ -69,11 +67,11 @@ core:
     data:
       DEBUG: "True"
       DB_SSLMODE: "require"
-      ALLOWED_HOSTS: "localhost,app.junglemassive.xyz"
+      ALLOWED_HOSTS: "localhost,app.junglemassive.xyz,core"
       FRONTEND_SERVICE_URL: "https://app.junglemassive.xyz"
-      EMAIL_SERVICE_URL: "http://example.com"
-      MAP_SERVICE_BASE_URL: "http://example.com"
-      VOTING_SERVICE_URL: "http://example.com"
+      EMAIL_SERVICE_URL: "http://email:8081"
+      MAP_SERVICE_BASE_URL: "http://map:8080"
+      VOTING_SERVICE_URL: "http://voting:8085"
 
   service:
     type: ClusterIP
@@ -106,11 +104,11 @@ email:
       tag: latest
     resources:
       limits:
-        memory: "256Mi"
-        cpu: "500m"
-      requests:
         memory: "128Mi"
-        cpu: "250m"
+        cpu: "100m"
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
     secretRef: email-secret
 
   configMap:
@@ -142,11 +140,11 @@ map:
       tag: latest
     resources:
       limits:
-        memory: "512Mi"
-        cpu: "500m"
+        memory: "128Mi"
+        cpu: "200m"
       requests:
-        memory: "256Mi"
-        cpu: "250m"
+        memory: "64Mi"
+        cpu: "50m"
     secretRef: map-secret
 
   configMap:
@@ -176,11 +174,11 @@ voting:
       tag: latest
     resources:
       limits:
-        memory: "512Mi"
-        cpu: "500m"
+        memory: "128Mi"
+        cpu: "200m"
       requests:
-        memory: "256Mi"
-        cpu: "250m"
+        memory: "64Mi"
+        cpu: "50m"
     secretRef: voting-secret
 
   configMap:
