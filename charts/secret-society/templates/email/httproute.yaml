@@ -13,6 +13,12 @@ spec:
     {{- with .matches }}
     - matches:
       {{- toYaml . | nindent 8 }}
+      filters:
+      - type: URLRewrite
+        urlRewrite:
+          path:
+            type: ReplacePrefixMatch
+            replacePrefixMatch: {{ (index . 0).path.value }}
     {{- end }}
     {{- end }}
       backendRefs:
