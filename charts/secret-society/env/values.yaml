@@ -1,20 +1,18 @@
-ecrCredsSecret: awsecr-cred
-
 frontend:
   name: frontend
 
   deployment:
     replicaCount: 1
     image:
-      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/frontend-service
+      repository: ""
       tag: latest
     resources:
       limits:
-        memory: "256Mi"
-        cpu: "500m"
+        memory: "64Mi"
+        cpu: "50m"
       requests:
-        memory: "128Mi"
-        cpu: "250m"
+        memory: "32Mi"
+        cpu: "20m"
 
   service:
     type: ClusterIP
@@ -27,6 +25,12 @@ frontend:
     - name: http
       protocol: HTTP
       port: 80
+      hostname: app.junglemassive.xyz
+
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: app.junglemassive.xyz
 
   httpRoute:
     rules:
@@ -41,7 +45,7 @@ core:
   deployment:
     replicaCount: 1
     image:
-      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/core-service
+      repository: ""
       tag: latest
     lifecycle:
       postStart:
@@ -51,24 +55,23 @@ core:
         - migrate
     resources:
       limits:
-        memory: "512Mi"
-        cpu: "500m"
+        memory: "256Mi"
+        cpu: "300m"
       requests:
         memory: "256Mi"
-        cpu: "250m"
+        cpu: "150m"
     secretRef: core-secret
 
   configMap:
     name: core-env
     data:
       DEBUG: "True"
-      DB_HOST: "db"
-      DB_PORT: "5432"
-      ALLOWED_HOSTS: "localhost"
-      FRONTEND_SERVICE_URL: "http://example.com"
-      EMAIL_SERVICE_URL: "http://example.com"
-      MAP_SERVICE_BASE_URL: "http://example.com"
-      VOTING_SERVICE_URL: "http://example.com"
+      DB_SSLMODE: "require"
+      ALLOWED_HOSTS: "localhost,app.junglemassive.xyz,core"
+      FRONTEND_SERVICE_URL: "https://app.junglemassive.xyz"
+      EMAIL_SERVICE_URL: "http://email:8081"
+      MAP_SERVICE_BASE_URL: "http://map:8080"
+      VOTING_SERVICE_URL: "http://voting:8085"
 
   service:
     type: ClusterIP
@@ -81,21 +84,31 @@ core:
           type: PathPrefix
           value: /core/api/v1
 
+  cronjobs:
+    rotatePasscode:
+      name: rotate-passcodes
+      schedule: "0 7 * * *"
+      path: /core/api/internal/v1/passcode/rotate
+    assignInquisitor:
+      name: assign-inquisitors
+      schedule: "5 7 * * *"
+      path: /core/api/internal/v1/inquisitor/assign-new
+
 email:
   name: email
 
   deployment:
     replicaCount: 1
     image:
-      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/email-service
+      repository: ""
       tag: latest
     resources:
       limits:
-        memory: "256Mi"
-        cpu: "500m"
-      requests:
         memory: "128Mi"
-        cpu: "250m"
+        cpu: "100m"
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
     secretRef: email-secret
 
   configMap:
@@ -123,22 +136,21 @@ map:
   deployment:
     replicaCount: 1
     image:
-      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/map-service
+      repository: ""
       tag: latest
     resources:
       limits:
-        memory: "512Mi"
-        cpu: "500m"
+        memory: "128Mi"
+        cpu: "200m"
       requests:
-        memory: "256Mi"
-        cpu: "250m"
+        memory: "64Mi"
+        cpu: "50m"
     secretRef: map-secret
 
   configMap:
     name: map-env
     data:
-      DB_HOST: "db"
-      DB_PORT: "5432"
+      DB_SSLMODE: "require"
       AWS_REGION: "eu-north-1"
 
   service:
@@ -158,22 +170,21 @@ voting:
   deployment:
     replicaCount: 1
     image:
-      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/voting-service
+      repository: ""
       tag: latest
     resources:
       limits:
-        memory: "512Mi"
-        cpu: "500m"
+        memory: "128Mi"
+        cpu: "200m"
       requests:
-        memory: "256Mi"
-        cpu: "250m"
+        memory: "64Mi"
+        cpu: "50m"
     secretRef: voting-secret
 
   configMap:
     name: voting-env
     data:
-      DB_HOST: "db"
-      DB_PORT: "5432"
+      DB_SSLMODE: "require"
 
   service:
     type: ClusterIP
@@ -185,3 +196,20 @@ voting:
       - path:
           type: PathPrefix
           value: /voting/api/polls
+
+  cronjobs:
+    checkPolls:
+      name: check-polls
+      schedule: "*/10 * * * *"
+      path: /voting/api/internal/polls/process
+
+cronjobs:
+  image:
+    repository: curlimages/curl
+    tag: latest
+    pullPolicy: IfNotPresent
+  timeZone: "Europe/Kyiv"
+  startingDeadlineSeconds: 200
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  backoffLimit: 2

@@ -1,0 +1,24 @@
+frontend:
+  deployment:
+    image:
+      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/frontend-service
+
+core:
+  deployment:
+    image:
+      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/core-service
+
+email:
+  deployment:
+    image:
+      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/email-service
+
+map:
+  deployment:
+    image:
+      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/map-service
+
+voting:
+  deployment:
+    image:
+      repository: 983988120210.dkr.ecr.eu-north-1.amazonaws.com/voting-service
