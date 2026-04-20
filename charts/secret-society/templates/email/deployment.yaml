@@ -35,5 +35,3 @@ spec:
           {{- end }}
           ports:
           - containerPort: {{ .Values.email.service.port }}
-      imagePullSecrets:
-        - name: {{ .Values.ecrCredsSecret }}

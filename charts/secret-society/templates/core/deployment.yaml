@@ -40,5 +40,3 @@ spec:
               exec:
                 command:
                   {{- toYaml .Values.core.deployment.lifecycle.postStart.command | nindent 18 }}
-      imagePullSecrets:
-        - name: {{ .Values.ecrCredsSecret }}
