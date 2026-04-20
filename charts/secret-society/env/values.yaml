@@ -20,7 +20,7 @@ frontend:
 
   gateway:
     name: main-gateway
-    class: nginx
+    class: consul
     listeners:
     - name: http
       protocol: HTTP

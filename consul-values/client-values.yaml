@@ -1,0 +1,40 @@
+global:
+  name: consul-client
+  datacenter: eu-north-1-dc-1
+  enabled: false
+
+  tls:
+    enabled: true
+    httpsOnly: true
+    verify: true
+    caCert:
+      secretName: consul-ca-cert
+      secretKey: tls.crt
+
+  acls:
+    manageSystemACLs: true
+    bootstrapToken:
+      secretName: consul-bootstrap-acl-token
+      secretKey: token
+
+server:
+  enabled: false
+
+client:
+  enabled: false
+
+externalServers:
+  enabled: true
+  hosts:
+    - "consul.server.internal.com"
+  # Kubernetes API endpoint of the cluster with consul clients.
+  # Change this value before deploying consul.
+  k8sAuthMethodHost: https://83FA51FA2090FA2CDBEBDE3C755A5875.gr7.eu-north-1.eks.amazonaws.com:443
+
+connectInject:
+  enabled: true
+  default: false
+  transparentProxy:
+    defaultEnabled: true
+  cni:
+    enabled: true
