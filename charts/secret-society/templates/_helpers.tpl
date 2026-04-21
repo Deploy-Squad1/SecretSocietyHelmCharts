@@ -59,3 +59,8 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "secret-society.consulAnnotations" -}}
+consul.hashicorp.com/connect-inject: "true"
+consul.hashicorp.com/transparent-proxy: "true"
+{{- end -}}

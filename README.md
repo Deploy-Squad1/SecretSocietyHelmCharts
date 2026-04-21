@@ -2,9 +2,8 @@
 
 ## Prerequisites
 
-1. [Install Gateway API resources](https://gateway-api.sigs.k8s.io/guides/getting-started/#install-standard-channel)
-2. [Install Gateway controller (NGINX Gateway Fabric)](https://docs.nginx.com/nginx-gateway-fabric/install/helm/#install-from-the-oci-registry)
-3. [Set up ECR secrets in Minikube using registry-creds plugin](https://minikube.sigs.k8s.io/docs/tutorials/configuring_creds_for_aws_ecr/)
+1. [Install Consul on Kubernetes](https://github.com/hashicorp/consul-k8s.git) using client-values in consul-values folder
+2. (For local testing) [Set up ECR secrets in Minikube using registry-creds plugin](https://minikube.sigs.k8s.io/docs/tutorials/configuring_creds_for_aws_ecr/)
 
 ## How to apply charts
 
@@ -62,6 +61,18 @@ kubectl create secret generic voting-secret \
 
 ### Applying charts
 
-Run `helm install secret-society charts/secret-society --namespace {namespace}`
+```bash
+helm install secret-society charts/secret-society \
+  --namespace {namespace} \
+  --f charts/secret-society/env/values.yaml \
+  --f charts/secret-society/env/values-{environment}.yaml
+```
 
-To upgrade existing chart run `helm upgrade secret-society charts/secret-society --namespace {namespace}`
+To upgrade existing chart run the following command:
+
+```bash
+helm upgrade secret-society charts/secret-society \
+  --namespace {namespace} \
+  --f charts/secret-society/env/values.yaml \
+  --f charts/secret-society/env/values-{environment}.yaml
+```

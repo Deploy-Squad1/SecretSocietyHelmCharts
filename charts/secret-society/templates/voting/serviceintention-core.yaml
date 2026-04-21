@@ -1,0 +1,10 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceIntentions
+metadata:
+  name: {{ .Values.core.name }}-to-{{ .Values.voting.name }}
+spec:
+  destination:
+    name: {{ .Values.voting.name }}
+  sources:
+    - name: {{ .Values.core.name }}
+      action: allow

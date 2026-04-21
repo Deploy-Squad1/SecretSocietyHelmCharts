@@ -1,0 +1,10 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceIntentions
+metadata:
+  name: {{ .Values.frontend.gateway.name }}-to-{{ .Values.frontend.name }}
+spec:
+  destination:
+    name: {{ .Values.frontend.name }}
+  sources:
+    - name: {{ .Values.frontend.gateway.name }}
+      action: allow

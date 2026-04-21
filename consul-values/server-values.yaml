@@ -1,0 +1,30 @@
+global:
+  name: consul-server
+  datacenter: eu-north-1-dc-1
+
+  tls:
+    enabled: true
+    enableAutoEncrypt: true
+    httpsOnly: true
+    verify: true
+    serverAdditionalDNSSANs:
+      - "consul.server.internal.com"
+
+  gossipEncryption:
+    autoGenerate: true
+
+  acls:
+    manageSystemACLs: true
+
+server:
+  replicas: 3
+  bootstrapExpect: 3
+  exposeService:
+    enabled: true
+    type: LoadBalancer
+    annotations: |
+      service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
+      external-dns.alpha.kubernetes.io/hostname: "consul.server.internal.com"
+
+ui:
+  enabled: false
